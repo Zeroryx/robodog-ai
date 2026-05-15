@@ -1,22 +1,15 @@
-import mediapipe as mp
+from gtts import gTTS
+import os
+
+language = 'id'
 
 
-class SignRecognition:
-    def __init__(self):
-        self.mp_hands = mp.solutions.hands
-        self.hands = self.mp_hands.Hands(
-            static_image_mode=True,
-            max_num_hands=1,
-            min_detection_confidence=0.5)
+text = "halo."
+speech = gTTS(text=text, lang=language, slow=False)
+speech.save("halo.mp3")
 
-    def recognize_sign(self, image):
-        # Process the image and extract hand landmarks
-        results = self.hands.process(image)
-        if results.multi_hand_landmarks:
-            # Here you would implement your sign recognition logic based on the landmarks
-            # For example, you could compare the landmarks to a predefined set of signs
-            return "Sign recognized"
-        else:
-            return "No hand detected"
-        
-        
+text1 = "1. "
+speech1 = gTTS(text=text1, lang=language, slow=False)
+speech1.save("1.mp3")
+
+
