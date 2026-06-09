@@ -1,0 +1,14 @@
+# requirements.txt
+# Install all packages at once with: pip install -r requirements.txt
+
+ultralytics>=8.0.0          # YOLOv8 object detection
+openai-whisper>=20231117    # Speech recognition
+opencv-python-headless>=4.8.0  # Image processing (headless = no display needed)
+numpy>=1.24.0               # Fast number arrays
+matplotlib>=3.7.0           # Drawing maps and charts
+fastapi>=0.104.0            # Web API server
+uvicorn>=0.24.0             # Runs FastAPI
+pydantic>=2.0.0             # Data validation
+scipy>=1.11.0               # Math (for SLAM)
+pytest>=7.4.0               # Testing
+python-dateutil>=2.8.0      # Date handling
