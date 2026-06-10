@@ -1,0 +1,6 @@
+train: Unified_Vision_System-1/train/images
+val: Unified_Vision_System-1/valid/images
+test: Unified_Vision_System-1/test/images
+
+nc: 7
+names: ['Paper', 'Rock', 'Scissors', 'face', 'kanan', 'kiri', 'lurus']
