@@ -1,0 +1,41 @@
+# requirements.txt
+# Install all packages at once with:
+#   pip install -r requirements.txt
+#
+# NOTE: Install torch FIRST separately (see instructions below)
+# torch must be installed before ultralyticspip install -r requirements.txt
+
+# CORE — needed by almost everything
+numpy>=1.24.0               # Arrays, grid maps, math
+Pillow>=9.5.0               # Image handling (required by qrcode and ultralytics)
+
+# NAVIGATION & SIMULATION
+matplotlib>=3.7.0           # Simulation display and grid visualization
+scipy>=1.11.0               # Math utilities (prepared for future SLAM)
+
+# PERCEPTION — YOLO obstacle detection
+torch>=2.0.0                # PyTorch — required backend for YOLOv8
+torchvision>=0.15.0         # PyTorch vision — required by ultralytics
+ultralytics>=8.0.0          # YOLOv8 object detection
+opencv-python>=4.8.0        # Image processing + camera feed display
+
+# DELIVERY — QR system
+qrcode>=7.4.0               # QR code generation
+pyzbar>=0.1.9               # QR code reading/decoding from camera
+
+# DATA VALIDATION
+pydantic>=2.0.0             # Data models and validation
+
+# TESTING
+pytest>=7.4.0               # Run tests with: pytest ztest/
+pytest-cov>=4.1.0           # Test coverage report
+
+# UTILITIES
+python-dateutil>=2.8.0      # Date/time handling
+
+
+# FUTURE — uncomment when needed
+
+# openai-whisper>=20231117  # Voice commands (Guide Dog mode)
+# fastapi>=0.104.0          # REST API for remote control
+# uvicorn>=0.24.0           # FastAPI server runner
