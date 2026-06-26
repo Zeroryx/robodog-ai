@@ -756,3 +756,249 @@ git push origin main
 ### Handling merge conflicts
 
 A merge conflict happens when two people edit the same line of the same file. Git will mark the conflict in the file like this:
+<<<<<<< HEAD
+MAX_PACKAGE_WEIGHT_KG = 2.0
+MAX_PACKAGE_WEIGHT_KG = 3.0
+
+
+
+
+
+
+
+teammate-branch
+To resolve:
+1. Open the file in VS Code
+2. Choose which version is correct (or combine both changes)
+3. Delete the `<<<<<<<`, `=======`, and `>>>>>>>` lines
+4. Save the file
+5. Run `git add <filename>` and `git commit -m "Resolve merge conflict in settings.py"`
+
+If you are unsure, call the team lead before resolving a conflict in a shared file like `core/state_machine.py` or `config/settings.py`.
+
+---
+
+### Branch strategy (recommended)
+
+For significant features, create a branch so you don't break the main working version:
+
+```bash
+# Create and switch to a new branch
+git checkout -b feature/yolo-integration
+
+# Work on your feature...
+git add .
+git commit -m "Add YOLOv8 inference pipeline to detector.py"
+
+# Push the branch
+git push origin feature/yolo-integration
+```
+
+Then open a Pull Request on GitHub for your team lead to review before merging into `main`.
+
+---
+
+## 👩‍💻 Development Workflow
+
+### Who owns what
+
+| Module | Owner Role | Primary Files |
+|---|---|---|
+| System architecture | Team Lead | `core/`, `config/`, `main.py` |
+| Pathfinding & maps | Navigation Developer | `navigation/` |
+| Delivery logic | Delivery Developer | `delivery/` |
+| User interface | UI Developer | `interface_UI/` |
+| AI / perception | Vision Developer | `perception/`, `data/models/` |
+| Visualization | Simulation Developer | `simulation/` |
+| Tests & docs | All members | `ztest/`, `README.md` |
+
+### Module ownership rule
+
+If a file is in your module, you own it. Do not edit another member's module without telling them first. If you need behavior from another module, use the existing public functions — do not reach inside and edit another module's internal logic.
+
+### Before pushing code, always verify
+
+```bash
+# Run the app and confirm it starts without errors
+python main.py
+
+# Run all tests and confirm they pass
+pytest ztest/
+
+# Check no debug print statements were left in
+grep -r "print(" navigation/ delivery/ core/
+```
+
+### Adding a new constant
+
+1. Open `config/settings.py`
+2. Add the constant in the correct section with a comment
+3. Import it in the file that needs it:
+```python
+   from config.settings import YOUR_CONSTANT
+```
+4. Never hardcode the value directly in logic files
+
+### Adding a new room to the campus map
+
+1. Open `config/campuslayout.py`
+2. Measure or estimate the grid coordinate on the floor map
+3. Add the entry to `CAMPUS_ROOMS`
+4. Commit with message: `"Add Room XXX to campus layout"`
+
+---
+
+## 🔧 Troubleshooting
+
+### `ModuleNotFoundError: No module named 'ultralytics'`
+
+Your virtual environment is not activated. Run:
+```bash
+# Windows PowerShell
+venv\Scripts\Activate.ps1
+
+# macOS / Linux
+source venv/bin/activate
+```
+Then try again.
+
+---
+
+### `Could not find a version that satisfies the requirement torch`
+
+You may have a Python version issue. Verify you are running Python 3.10 or 3.11:
+```bash
+python --version
+```
+Also make sure you are using the PyTorch-specific install URL from Step 5.
+
+---
+
+### `FileNotFoundError: data/models/yolov8n.pt`
+
+The YOLO model file has not been downloaded or is in the wrong location. Follow Step 7 of the installation guide again. Confirm the file exists at `data/models/yolov8n.pt`.
+
+---
+
+### `ImportError: Unable to find zbar shared library`
+
+This is a `pyzbar` issue on Windows. Run:
+```bash
+pip install pyzbar[scripts]
+```
+If it persists, download `libzbar-64.dll` from http://zbar.sourceforge.net and place it in the project root folder.
+
+---
+
+### `Matplotlib window appears but robot does not move`
+
+Check the terminal for error messages. The most common cause is a missing room coordinate in `config/campuslayout.py` — the destination room exists in the UI but has no grid position.
+
+---
+
+### `A* returns no path`
+
+Possible causes:
+1. Start position equals goal position
+2. Goal position is inside a wall cell on the floor map
+3. The destination room grid coordinate in `campuslayout.py` is outside the grid boundary
+
+Check the grid dimensions in `settings.py` and verify the room coordinates in `campuslayout.py` are within `GRID_ROWS` and `GRID_COLS`.
+
+---
+
+### `git push` is rejected
+
+Your local branch is behind the remote. Run:
+```bash
+git pull origin main
+```
+Resolve any conflicts, then push again.
+
+---
+
+### `pytest: command not found`
+
+Run tests using the module flag:
+```bash
+python -m pytest ztest/
+```
+
+---
+
+### The simulation runs slowly
+
+YOLO inference on CPU is slow. During development, disable YOLO by setting `DETECTION_FPS = 0` in `config/settings.py` and use mock obstacle data instead.
+
+---
+
+## 🤝 Contributing Guidelines
+
+1. **Pull before you start.** Always run `git pull origin main` before writing any code.
+2. **Own your module.** Work within your assigned module. Coordinate with other members before editing shared files.
+3. **Use the config file.** Never hardcode numbers, strings, or coordinates inside logic files. All constants go in `config/settings.py`.
+4. **Write clear commit messages.** Your teammates will read them. Make them informative.
+5. **Do not commit the `venv/` folder.** It is in `.gitignore` for a reason. Every team member creates their own local environment.
+6. **Do not commit `.pt` model files.** YOLO model files are large binary files. Download them locally using the instructions in Step 7.
+7. **Run tests before pushing.** If your change breaks a test, fix the test or discuss with the team first.
+8. **Import from config, not from other modules' internals.** If you need a constant, it should be in `config/settings.py`. If you need behavior, call the module's public functions.
+9. **Ask before changing `core/`.** `core/robot.py` and `core/state_machine.py` affect every module. Changes there require team discussion.
+10. **Document what you add.** Add a one-line docstring to every function you write:
+```python
+    def validate_package(length, width, height, weight):
+        """Returns (is_valid, error_list) based on limits in settings.py."""
+```
+
+---
+
+## 🔮 Future Improvements
+
+The following features are planned for future development phases:
+
+### Phase 2 — Hardware Integration
+- Replace `simulation/` with real ROS2 motor and sensor drivers
+- Implement real camera feed in `hardware/sensor_interface.py`
+- Real-time localization using odometry or visual SLAM
+
+### Phase 3 — Advanced Navigation
+- SLAM integration for dynamic map building using LiDAR
+- Elevator interaction — the robot presses buttons and waits for doors
+- Multi-robot coordination and fleet management
+- Improved obstacle prediction using obstacle velocity tracking
+
+### Phase 4 — Extended Modes
+- **Guide Dog Mode** — guides visually impaired users through the building using audio cues
+- **Patrol Mode** — autonomously patrols corridors on a schedule
+- **Delivery Scheduling** — accept future delivery bookings via the UI
+
+### Phase 5 — Remote Access
+- REST API (`api/`) for submitting delivery requests from a web browser or mobile app
+- Real-time delivery tracking dashboard
+- Voice command interface using OpenAI Whisper (`openai-whisper`)
+
+---
+
+## 👥 Team
+
+This project is developed by a team of students from **BINUS University, Syahdan Campus**, Jakarta, Indonesia.
+
+| Role | Responsibility |
+|---|---|
+| Team Lead / Architect | `core/`, `config/`, `main.py`, system integration |
+| Navigation Developer | `navigation/` — pathfinding and map management |
+| Delivery Developer | `delivery/` — QR system, validation, delivery logic |
+| UI Developer | `interface_UI/` — all user-facing screens |
+| Vision / AI Developer | `perception/` — YOLO integration and obstacle tracking |
+| Simulation Developer | `simulation/` — visualization and test environments |
+
+---
+
+## 📄 License
+
+This project is developed for educational purposes as part of a university course at BINUS University.
+
+© 2025 BINUS University — AI Robotic Dog Team. All rights reserved.
+
+---
+
+*Last updated: June 2025 — Pre-hardware simulation phase*
