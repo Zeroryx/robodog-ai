@@ -10,7 +10,7 @@ from kivy.metrics import dp
 class MenuCard(BoxLayout):
     """A tappable action card with an icon label and description."""
 
-    def __init__(self, title, description, icon, target_screen, screen_manager, **kwargs):
+    def __init__(self, title, description, icon, target_screen, screen_manager=None, **kwargs):
         super().__init__(**kwargs)
         self.orientation = "vertical"
         self.padding = dp(12)
@@ -61,6 +61,9 @@ class MenuCard(BoxLayout):
         self._rect.pos = self.pos
         self._rect.size = self.size
 
+    def set_screen_manager(self, screen_manager):
+        self._sm = screen_manager
+
     def _navigate(self, *_):
         if self._sm and self._target:
             self._sm.current = self._target
@@ -79,6 +82,7 @@ class HomeScreen(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._cards = []
         self._build_ui()
 
     def _build_ui(self):
@@ -134,13 +138,15 @@ class HomeScreen(Screen):
         ]
 
         for title, desc, icon, target in actions:
-            grid.add_widget(MenuCard(
+            card = MenuCard(
                 title=title,
                 description=desc,
                 icon=icon,
                 target_screen=target,
                 screen_manager=self.manager if self.manager else None,
-            ))
+            )
+            self._cards.append(card)
+            grid.add_widget(card)
 
         root.add_widget(grid)
 
@@ -187,5 +193,7 @@ class HomeScreen(Screen):
 
     def on_enter(self):
         """Called every time this screen becomes active — refresh stats here."""
+        for card in self._cards:
+            card.set_screen_manager(self.manager)
         print("[HomeScreen] Screen entered")
         # TODO: pull live battery %, floor, queue count from hardware/robot_state.py
