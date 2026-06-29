@@ -1,36 +1,4 @@
-# === Virtual Environment (Paling penting biar push gak berat!) ===
-**/venv/
-**/.venv/
-**/__pycache__/
-**/*.pyc
-# === Python Bytecode / Cache ===
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache/
-.ipynb_checkpoints/
-
-# === IDE & Editor Configs ===
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# === Operating System Files ===
-.DS_Store
-Thumbs.db
-
-# === AI Models, Weights, & Large Datasets ===
-# (Tambahkan ini jika folder 'ai' atau 'modes' kamu berisi file model berukuran besar)
-*.bin
-*.gguf
-*.pth
-*.pt
-*.onnx
-*.pkl
-*.h5
-
-# === Logs & Temporary Files ===
-*.log
-logs/
+Unified_Vision_System-1/train/
+Unified_Vision_System-1/test/
+Unified_Vision_System-1/valid/
+Unified_Vision_System-1/*.pt
